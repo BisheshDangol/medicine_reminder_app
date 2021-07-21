@@ -5,13 +5,15 @@ class Medicine with ChangeNotifier {
   String title;
   String reason;
   String imageUrl;
-  DateTime time;
+  DateTime date;
+  TimeOfDay time;
 
   Medicine({
     required this.id,
     required this.imageUrl,
     required this.reason,
-    required this.time,
+    required this.date,
     required this.title,
+    required this.time,
   });
 }

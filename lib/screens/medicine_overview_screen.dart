@@ -52,7 +52,7 @@ class MedicineOverViewScreen extends StatelessWidget {
                           ),
                           SizedBox(height: 15),
                           Text(
-                            'Reminder: ${medicines.meds[index].time}',
+                            'Reminder: ${medicines.meds[index].date}',
                             style: TextStyle(fontSize: 13),
                           ),
                         ],

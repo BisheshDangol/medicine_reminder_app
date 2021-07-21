@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import '../models/medicine.dart';
+import 'package:provider/provider.dart';
+import '../models/medicines.dart';
 
 class AddMedicineScreen extends StatefulWidget {
   static const routeName = '/add-medicine';
@@ -8,18 +12,157 @@ class AddMedicineScreen extends StatefulWidget {
 }
 
 class _AddMedicineScreenState extends State<AddMedicineScreen> {
-  final _formKey = GlobalKey<FormState>();
+  final _titleController = TextEditingController();
+  final _reasonController = TextEditingController();
+  final _typeController = TextEditingController();
+  late DateTime _selectedDate;
+  late TimeOfDay _selectedTime;
+
+  @override
+  void initState() {
+    _selectedDate = DateTime.now();
+    _selectedTime = TimeOfDay.now();
+    super.initState();
+  }
+
+  void _presentDatePicker() {
+    showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime(2021),
+      lastDate: DateTime(2025),
+    ).then((pickedDate) {
+      if (pickedDate == null) {
+        return;
+      }
+      setState(() {
+        _selectedDate = pickedDate;
+      });
+    });
+  }
+
+  String img(String imageUrl) {
+    if (imageUrl == 'injection') {
+      return 'assets/images/injection.png';
+    } else if (imageUrl == 'capsule') {
+      return 'assets/images/capsule.jpg';
+    } else if (imageUrl == 'liquid') {
+      return 'assets/images/liquid.png';
+    }
+    return 'assets/images/capsule.jpg';
+  }
+
+  void _presentTimePicker() {
+    showTimePicker(
+      context: context,
+      initialTime: _selectedTime,
+    ).then((pickedTime) {
+      if (pickedTime == null) {
+        return;
+      }
+      setState(() {
+        _selectedTime = pickedTime;
+      });
+    });
+  }
+
+  void addMedicineBtn(Medicines med) {
+    var _editedMedicine = new Medicine(
+      id: DateTime.now().toString(),
+      imageUrl: img(_typeController.text),
+      reason: _reasonController.text,
+      date: _selectedDate,
+      title: _titleController.text,
+      time: _selectedTime,
+    );
+    med.addMedicine(_editedMedicine);
+    Navigator.of(context).pop();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final medicines = Provider.of<Medicines>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Add Medicine'),
         centerTitle: true,
       ),
-      body: Form(
-        key: _formKey,
-        child: Column(
-          children: [],
+      body: Padding(
+        padding: const EdgeInsets.all(15.0),
+        child: ListView(
+          children: [
+            TextField(
+              decoration: InputDecoration(labelText: 'Medicine Name'),
+              controller: _titleController,
+            ),
+            SizedBox(height: 20),
+            TextField(
+              decoration: InputDecoration(labelText: 'Reason'),
+              controller: _reasonController,
+            ),
+            TextField(
+              decoration: InputDecoration(labelText: 'Medicine Type'),
+              controller: _typeController,
+            ),
+            SizedBox(height: 20),
+            Container(
+              height: 70,
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                    child: Text(
+                      'Picked Date: ${DateFormat.yMMMMd().format(_selectedDate)}',
+                    ),
+                  ),
+                  // ignore: deprecated_member_use
+                  FlatButton(
+                      textColor: Theme.of(context).primaryColor,
+                      child: Text(
+                        'Choose Date',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      onPressed: () {
+                        _presentDatePicker();
+                      }),
+                ],
+              ),
+            ),
+            Container(
+              height: 70,
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                    child: Text(
+                      'Picked Time: ${_selectedTime.hour} : ${_selectedTime.minute}',
+                    ),
+                  ),
+                  // ignore: deprecated_member_use
+                  FlatButton(
+                      textColor: Theme.of(context).primaryColor,
+                      child: Text(
+                        'Choose Date',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      onPressed: () {
+                        _presentTimePicker();
+                      }),
+                ],
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                addMedicineBtn(medicines);
+              },
+              child:
+                  Text('Add Medicine', style: TextStyle(color: Colors.white)),
+              style: ElevatedButton.styleFrom(primary: Colors.purple),
+            )
+          ],
         ),
       ),
     );
