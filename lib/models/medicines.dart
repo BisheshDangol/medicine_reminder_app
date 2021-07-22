@@ -17,6 +17,11 @@ class Medicines with ChangeNotifier {
     return [..._meds];
   }
 
+  removeMedicine(int index) {
+    _meds.removeAt(index);
+    notifyListeners();
+  }
+
   addMedicine(Medicine medicine) {
     final newMedicine = new Medicine(
       id: medicine.id,

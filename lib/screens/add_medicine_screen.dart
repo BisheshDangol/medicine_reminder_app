@@ -14,9 +14,9 @@ class AddMedicineScreen extends StatefulWidget {
 class _AddMedicineScreenState extends State<AddMedicineScreen> {
   final _titleController = TextEditingController();
   final _reasonController = TextEditingController();
-  final _typeController = TextEditingController();
   late DateTime _selectedDate;
   late TimeOfDay _selectedTime;
+  String chosenValue = 'injection';
 
   @override
   void initState() {
@@ -69,7 +69,7 @@ class _AddMedicineScreenState extends State<AddMedicineScreen> {
   void addMedicineBtn(Medicines med) {
     var _editedMedicine = new Medicine(
       id: DateTime.now().toString(),
-      imageUrl: img(_typeController.text),
+      imageUrl: img(chosenValue),
       reason: _reasonController.text,
       date: _selectedDate,
       title: _titleController.text,
@@ -79,10 +79,15 @@ class _AddMedicineScreenState extends State<AddMedicineScreen> {
     Navigator.of(context).pop();
   }
 
+  List type = [
+    "injection",
+    "capsule",
+    "liquid",
+  ];
+
   @override
   Widget build(BuildContext context) {
     final medicines = Provider.of<Medicines>(context);
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Add Medicine'),
@@ -101,9 +106,26 @@ class _AddMedicineScreenState extends State<AddMedicineScreen> {
               decoration: InputDecoration(labelText: 'Reason'),
               controller: _reasonController,
             ),
-            TextField(
-              decoration: InputDecoration(labelText: 'Medicine Type'),
-              controller: _typeController,
+            SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Medicine Type: '),
+                DropdownButton(
+                  items: type.map((dropDownItem) {
+                    return DropdownMenuItem(
+                      child: Text(dropDownItem),
+                      value: dropDownItem,
+                    );
+                  }).toList(),
+                  value: chosenValue,
+                  onChanged: (newValue) {
+                    setState(() {
+                      chosenValue = newValue.toString();
+                    });
+                  },
+                ),
+              ],
             ),
             SizedBox(height: 20),
             Container(
@@ -143,7 +165,7 @@ class _AddMedicineScreenState extends State<AddMedicineScreen> {
                   FlatButton(
                       textColor: Theme.of(context).primaryColor,
                       child: Text(
-                        'Choose Date',
+                        'Choose Time',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                         ),
@@ -154,6 +176,7 @@ class _AddMedicineScreenState extends State<AddMedicineScreen> {
                 ],
               ),
             ),
+            SizedBox(height: 190),
             ElevatedButton(
               onPressed: () {
                 addMedicineBtn(medicines);
