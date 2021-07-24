@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:intl/intl.dart';
 import '../models/medicines.dart';
 import 'package:provider/provider.dart';
 
@@ -80,7 +81,9 @@ class MedicineOverViewScreen extends StatelessWidget {
                                   ),
                                   SizedBox(height: 15),
                                   Text(
-                                    'Reminder: ${medicines.meds[index].date}',
+                                    'Date: ${DateFormat('yyyy-MM-dd').format(
+                                      medicines.meds[index].date,
+                                    )} | Time: ${medicines.meds[index].time.hour}: ${medicines.meds[index].time.minute}',
                                     style: TextStyle(fontSize: 13),
                                   ),
                                 ],
