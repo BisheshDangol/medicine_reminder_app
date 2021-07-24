@@ -2,16 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/medicine.dart';
 
 class Medicines with ChangeNotifier {
-  List<Medicine> _meds = [
-    Medicine(
-      id: 'm1',
-      imageUrl: 'assets/images/injection.png',
-      reason: 'For Lower back pain',
-      date: DateTime.now(),
-      time: TimeOfDay.now(),
-      title: 'Cetamol',
-    ),
-  ];
+  List<Medicine> _meds = [];
 
   List<Medicine> get meds {
     return [..._meds];
@@ -22,7 +13,7 @@ class Medicines with ChangeNotifier {
     notifyListeners();
   }
 
-  addMedicine(Medicine medicine) {
+  Future<void> addMedicine(Medicine medicine) async {
     final newMedicine = new Medicine(
       id: medicine.id,
       imageUrl: medicine.imageUrl,

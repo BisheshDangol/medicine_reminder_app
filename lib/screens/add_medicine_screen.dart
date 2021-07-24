@@ -1,11 +1,24 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
+import 'package:medicine_reminder_app/main.dart';
 import '../models/medicine.dart';
 import 'package:provider/provider.dart';
 import '../models/medicines.dart';
+import 'package:timezone/timezone.dart' as tz;
 
 class AddMedicineScreen extends StatefulWidget {
+  final NotificationAppLaunchDetails? notificationAppLaunchDetails;
+
+  const AddMedicineScreen(
+    this.notificationAppLaunchDetails, {
+    Key? key,
+  }) : super(key: key);
   static const routeName = '/add-medicine';
+
+  bool get didNotificationLaunchApp =>
+      notificationAppLaunchDetails?.didNotificationLaunchApp ?? false;
 
   @override
   _AddMedicineScreenState createState() => _AddMedicineScreenState();
@@ -66,9 +79,22 @@ class _AddMedicineScreenState extends State<AddMedicineScreen> {
     });
   }
 
+  var random = Random();
+
+  int randomNumber() {
+    int generatedValue = 0;
+    var n1 = random.nextInt(16);
+    var n2 = random.nextInt(15);
+    if (n1 != n2) {
+      generatedValue = n1;
+    }
+    return generatedValue;
+  }
+
   void addMedicineBtn(Medicines med) {
     var _editedMedicine = new Medicine(
-      id: DateTime.now().toString(),
+      id: randomNumber().toString(),
+      // id: DateTime.now().millisecond.toInt().toString(),
       imageUrl: img(chosenValue),
       reason: _reasonController.text,
       date: _selectedDate,
@@ -76,6 +102,7 @@ class _AddMedicineScreenState extends State<AddMedicineScreen> {
       time: _selectedTime,
     );
     med.addMedicine(_editedMedicine);
+    print(randomNumber().toString());
     Navigator.of(context).pop();
   }
 
@@ -84,6 +111,45 @@ class _AddMedicineScreenState extends State<AddMedicineScreen> {
     "capsule",
     "liquid",
   ];
+
+  Future<void> _scheduleDailyTenAMNotification(List<Medicine> med) async {
+    // ignore: await_only_futures
+    await med
+        .map(
+          (medicine) => flutterLocalNotificationsPlugin.zonedSchedule(
+              int.parse(medicine.id),
+              medicine.title,
+              'It is time for your medication for ${medicine.reason}',
+              _nextInstanceOfTenAM(medicine.time.hour.toString(),
+                  medicine.time.minute.toString()),
+              const NotificationDetails(
+                android: AndroidNotificationDetails(
+                    'daily notification channel id',
+                    'daily notification channel name',
+                    'daily notification description'),
+              ),
+              androidAllowWhileIdle: true,
+              uiLocalNotificationDateInterpretation:
+                  UILocalNotificationDateInterpretation.absoluteTime,
+              matchDateTimeComponents: DateTimeComponents.time),
+        )
+        .toList();
+  }
+
+  tz.TZDateTime _nextInstanceOfTenAM(String hours, String minutes) {
+    final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
+    tz.TZDateTime scheduledDate = tz.TZDateTime(
+      tz.local,
+      now.year,
+      now.month,
+      now.day,
+      int.parse(hours),
+      int.parse(
+        minutes,
+      ),
+    );
+    return scheduledDate = scheduledDate.add(const Duration(seconds: 0));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -178,8 +244,9 @@ class _AddMedicineScreenState extends State<AddMedicineScreen> {
             ),
             SizedBox(height: 190),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 addMedicineBtn(medicines);
+                await _scheduleDailyTenAMNotification(medicines.meds);
               },
               child:
                   Text('Add Medicine', style: TextStyle(color: Colors.white)),
