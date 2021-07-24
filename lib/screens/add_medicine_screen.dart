@@ -56,13 +56,17 @@ class _AddMedicineScreenState extends State<AddMedicineScreen> {
 
   String img(String imageUrl) {
     if (imageUrl == 'injection') {
-      return 'assets/images/injection.png';
+      return 'assets/images/injection_edited.png';
     } else if (imageUrl == 'capsule') {
-      return 'assets/images/capsule.jpg';
+      return 'assets/images/capsule_edited.png';
     } else if (imageUrl == 'liquid') {
-      return 'assets/images/liquid.png';
+      return 'assets/images/liquid_edited.png';
+    } else if (imageUrl == 'inhaler') {
+      return 'assets/images/inhalers_edited.png';
+    } else if (imageUrl == 'drops') {
+      return 'assets/images/drops_edited.png';
     }
-    return 'assets/images/capsule.jpg';
+    return 'assets/images/capsule_edited.png';
   }
 
   void _presentTimePicker() {
@@ -110,6 +114,8 @@ class _AddMedicineScreenState extends State<AddMedicineScreen> {
     "injection",
     "capsule",
     "liquid",
+    "inhaler",
+    "drops",
   ];
 
   Future<void> _scheduleDailyTenAMNotification(List<Medicine> med) async {
