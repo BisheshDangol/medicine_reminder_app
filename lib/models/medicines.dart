@@ -30,4 +30,8 @@ class Medicines with ChangeNotifier {
   int itemCount() {
     return _meds.length;
   }
+
+  findById(int index) {
+    return _meds.contains(index);
+  }
 }
