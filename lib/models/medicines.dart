@@ -32,6 +32,6 @@ class Medicines with ChangeNotifier {
   }
 
   findById(int index) {
-    return _meds.contains(index);
+    return _meds.firstWhere((meds) => meds.id == _meds[index].id);
   }
 }

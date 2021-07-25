@@ -18,9 +18,9 @@ class MedicineItem extends StatelessWidget {
           direction: DismissDirection.endToStart,
           key: UniqueKey(),
           onDismissed: (direction) {
+            flutterLocalNotificationsPlugin
+                .cancel(int.parse(medicines.meds[index].id));
             medicines.removeMedicine(index);
-            flutterLocalNotificationsPlugin.cancel(index);
-            print('index: $index');
           },
           background: Container(
             margin: EdgeInsets.all(10),
