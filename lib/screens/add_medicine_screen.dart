@@ -95,19 +95,29 @@ class _AddMedicineScreenState extends State<AddMedicineScreen> {
     return generatedValue;
   }
 
+  final snackBar = SnackBar(
+    content: Text(
+      'Please fill all the details properly.',
+      textAlign: TextAlign.center,
+    ),
+    duration: const Duration(seconds: 1),
+  );
+
   void addMedicineBtn(Medicines med) {
-    var _editedMedicine = new Medicine(
-      id: randomNumber().toString(),
-      // id: DateTime.now().millisecond.toInt().toString(),
-      imageUrl: img(chosenValue),
-      reason: _reasonController.text,
-      date: _selectedDate,
-      title: _titleController.text,
-      time: _selectedTime,
-    );
-    med.addMedicine(_editedMedicine);
-    print(randomNumber().toString());
-    Navigator.of(context).pop();
+    if (_titleController.text.isNotEmpty && _reasonController.text.isNotEmpty) {
+      var _editedMedicine = new Medicine(
+        id: randomNumber().toString(),
+        imageUrl: img(chosenValue),
+        reason: _reasonController.text,
+        date: _selectedDate,
+        title: _titleController.text,
+        time: _selectedTime,
+      );
+      med.addMedicine(_editedMedicine);
+      Navigator.of(context).pop();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
   }
 
   List type = [
